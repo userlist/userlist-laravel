@@ -41,7 +41,7 @@ class UserlistServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('\Userlist\Push', function($app) {
+        $this->app->singleton(\Userlist\Push::class, function($app) {
             return new \Userlist\Push(config('userlist'));
         });
     }
