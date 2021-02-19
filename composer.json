@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": ">=7.1",
-        "userlistio/userlist": "*"
+        "userlist/userlist": "*"
     },
     "autoload": {
         "psr-4": {
