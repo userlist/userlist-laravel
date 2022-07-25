@@ -8,16 +8,22 @@ use Userlist\Laravel\Contracts\CompanyTransform;
 use Userlist\Laravel\Contracts\EventTransform;
 
 class NullPush implements Push {
+    public function __construct(UserTransform $userTransform, CompanyTransform $companyTransform, EventTransform $eventTransform)
+    {
+        $this->userTransform = $userTransform;
+        $this->companyTransform = $companyTransform;
+        $this->eventTransform = $eventTransform;
+    }
 
     public function user($user) {
-        $user->transformForUserlist();
+        $this->userTransform->transform($user);
     }
 
     public function company($company) {
-        $company->transformForUserlist();
+        $this->companyTransform->transform($company);
     }
 
     public function event($event) {
-        $event->transformForUserlist();
+        $this->eventTransform->transform($event);
     }
 }
