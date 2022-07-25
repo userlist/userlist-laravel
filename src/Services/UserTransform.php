@@ -6,6 +6,11 @@ use Userlist\Laravel\Contracts\UserTransform as Transform;
 use Illuminate\Support\Str;
 
 class UserTransform implements Transform {
+
+    /**
+     * @param $user
+     * @return array
+     */
     public function transform($user) {
         $modelName = Str::slug((class_basename(get_class($user))));
 

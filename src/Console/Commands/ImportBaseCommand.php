@@ -5,7 +5,7 @@ namespace Userlist\Laravel\Console\Commands;
 use Illuminate\Console\Command;
 use Userlist\Laravel\Contracts\Push as Userlist;
 
-class ImportBaseCommand extends Command
+abstract class ImportBaseCommand extends Command
 {
     /**
      * The userlist client
@@ -31,4 +31,18 @@ class ImportBaseCommand extends Command
             $this->import($entity);
         }
     }
+
+    /**
+     * Import some data based on an Eloquent model
+     * @param $model
+     * @return null
+     */
+    abstract protected function import($model);
+
+    /**
+     * Return a full-qualified class name
+     * e.g. \App\Models\User
+     * @return string
+     */
+    abstract protected function modelClass();
 }
