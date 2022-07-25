@@ -3,12 +3,13 @@
 namespace Userlist\Laravel;
 
 
+use Userlist\Laravel\Services\CompanyTransform;
 use Userlist\Laravel\Services\UserTransform;
 
 trait ImportsToUserlist
 {
     /**
-     * T
+     * Transform a model to a Userlist object
      * @return array|void
      */
     public function transformForUserlist()
@@ -18,7 +19,11 @@ trait ImportsToUserlist
         }
 
         if (__CLASS__ == config('userlist.user_model')) {
-            return (new UserTransform())->transform($this);
+            return (new UserTransform)->transform($this);
+        }
+
+        if (__CLASS__ == config('userlist.company_model')) {
+            return (new CompanyTransform)->transform($this);
         }
     }
 }
