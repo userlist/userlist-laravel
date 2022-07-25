@@ -14,6 +14,7 @@ class EventTransform implements Transform {
     }
 
     public function transform($event) {
+
         $event['user'] = $this->userTransform->transform($event['user']);
         $event['company'] = $this->companyTransform->transform($event['company']);
 
