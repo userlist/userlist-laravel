@@ -4,7 +4,9 @@ namespace Userlist\Laravel;
 
 
 use Userlist\Laravel\Services\CompanyTransform;
+use Userlist\Laravel\Services\EventTransform;
 use Userlist\Laravel\Services\UserTransform;
+use Userlist\Push;
 
 trait ImportsToUserlist
 {
@@ -20,13 +22,10 @@ trait ImportsToUserlist
 
         if (__CLASS__ == config('userlist.user_model')) {
             return (new UserTransform)->transform($this);
-        }
-
-        if (__CLASS__ == config('userlist.company_model')) {
+        } else if (__CLASS__ == config('userlist.company_model')) {
             return (new CompanyTransform)->transform($this);
+        } else {
+            return (new EventTransform)->transform($this);
         }
-
-        // todo: Auto Event transform based on class namespace,
-        //       or existence of $this['user'] / $this['company']
     }
 }
