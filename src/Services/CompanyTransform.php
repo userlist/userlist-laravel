@@ -12,6 +12,10 @@ class CompanyTransform implements Transform {
      * @return array
      */
     public function transform($company) {
+        if (method_exists($company, 'toUserlist')) {
+            return $company->toUserlist();
+        }
+
         $modelName = Str::slug((class_basename(get_class($company))));
 
         return [

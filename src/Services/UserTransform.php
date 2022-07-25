@@ -12,6 +12,10 @@ class UserTransform implements Transform {
      * @return array
      */
     public function transform($user) {
+        if (method_exists($user, 'toUserlist')) {
+            return $user->toUserlist();
+        }
+
         $modelName = Str::slug((class_basename(get_class($user))));
 
         return [
