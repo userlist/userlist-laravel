@@ -25,5 +25,8 @@ trait ImportsToUserlist
         if (__CLASS__ == config('userlist.company_model')) {
             return (new CompanyTransform)->transform($this);
         }
+
+        // todo: Auto Event transform based on class namespace,
+        //       or existence of $this['user'] / $this['company']
     }
 }

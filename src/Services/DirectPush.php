@@ -3,22 +3,15 @@
 namespace Userlist\Laravel\Services;
 
 use Userlist\Laravel\Contracts\Push;
-use Userlist\Laravel\Contracts\UserTransform;
-use Userlist\Laravel\Contracts\CompanyTransform;
-use Userlist\Laravel\Contracts\EventTransform;
 
 class DirectPush implements Push {
-    public function __construct(\Userlist\Push $push, UserTransform $userTransform, CompanyTransform $companyTransform, EventTransform $eventTransform)
+    public function __construct(\Userlist\Push $push)
     {
         $this->push = $push;
-
-        $this->userTransform = $userTransform;
-        $this->companyTransform = $companyTransform;
-        $this->eventTransform = $eventTransform;
     }
 
     public function user($user) {
-        $payload = $this->userTransform->transform($user);
+        $payload = $user->transformForUserlist();
 
         if ($payload != null) {
             try {
@@ -30,7 +23,7 @@ class DirectPush implements Push {
     }
 
     public function company($company) {
-        $payload = $this->companyTransform->transform($company);
+        $payload = $company->transformForUserlist();
 
         if ($payload != null) {
             try {
@@ -41,7 +34,7 @@ class DirectPush implements Push {
         }
     }
 
-    public function event($event) {
+    public function event($event){
         $payload = $this->eventTransform->transform($event);
 
         if ($payload != null) {
