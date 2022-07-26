@@ -12,17 +12,13 @@ composer require userlist/userlist-laravel
 
 ## Configuration
 
-There are 2 configuration steps.
-
-**First, publish the configuration file:**
-
 After installation, you can publish the configuration file for Userlist:
 
 ```bash
 php artisan vendor:publish --provider Userlist\Laravel\UserlistServiceProvider
 ```
 
-You can then edit the `config/userlist.php` file if needed:
+You can then edit the `config/userlist.php` file if needed.
 
 ```php
 # Adjust if your User/Team models are found elsewhere
@@ -30,42 +26,19 @@ return [
     'user_model' => \App\Models\User::class,
     'company_model' => \App\Models\Team::class,
     'push_id' => env('USERLIST_PUSH_ID'),
-    'push_key' => env('USERLIST_PUSH_KEY')
+    'push_key' => env('USERLIST_PUSH_KEY'),
 ];
 ```
 
-**Second, add the Userlist trait to your models:**
+Userlist will attempt to transform your `User` and `Team` (Company) models to data it can understand automatically (an associated array that can be encoded as JSON)..
+
+However, if you need or want to customize the User/Team (Company)/Event objects sent to Userlist, you can add a public `toUserList()` method to your Model or Event classes:
 
 ```php
-# Other items omitted
-use Userlist\Laravel\ImportsToUserlist;
-
 class User extends Authenticatable
-{
-    # Other items omitted
-    use ImportsToUserlist;
-    
-    ...
-}
-```
-
-User and Team (Company) models need to be transformed to data Userlist can understand (https://userlist.com/docs/getting-started/integration-guide/).
-
-If you need to customize how Userlist transforms your models data, you can add a `toUserlist()` method to your classes:
-
-```php
-# Other items omitted
-use Userlist\Laravel\ImportsToUserlist;
-
-class User extends Authenticatable
-{
-    # Other items omitted
-    use ImportsToUserlist;
-    
+{    
     public function toUserlist()
     {
-        $modelName = Str::slug((class_basename(get_class($user))));
-
         return [
             'identifier' => "user-$this->getKey()",
             'email' => $user->email,
@@ -73,9 +46,10 @@ class User extends Authenticatable
             'properties' => [
                 'name' => $user->name
             ],
+            // Assuming allTeams() is a method of this class
             'companies' => $this->allTeams()->map(function(Team $team) {
-                // Assuming the team also uses uses `ImportsToUserlist`
-                return $team->transformForUserlist();
+                // Assuming the team also has a `toUserList()` method
+                return $team->toUserList();
             })->toArray();
         ];
     }
@@ -86,13 +60,62 @@ class User extends Authenticatable
 
 ### Importing Current Data
 
+This package includes some commands to help you load your current data (users and companies) into Userlist. After using these commands, you should also implement code
+to register users and companies to Userlist as they are created or updated.
+
+The `userlist:import` command imports all users and companies into Userlist. These uses the configuration for `user_model` 
+and `company_model` to decide which Eloquent models to include.
+
+```bash
+# This command calls the following under the hood
+#  userlist:import:companies
+#  userlist:import:users
+php artisan userlist:import
+```
+
+The `userlist:import:companies` command will use the Eloquent model defined by the `company_model` configuration to import all companies.
+
+In Laravel, this is often the `App\Models\Team` model.
+
+```bash
+php artisan userlist:import:companies
+```
+
+The `userlist:import:users` command will use the Eloquent model defined by the `user_model` configuration to import all users.
+
+In Laravel, this is often the `App\Models\User` model.
+
+```bash
+php artisan userlist:import:users
+```
+
 ### Tracking Companies
 
+You can track companies (adding and updating) by "pushing" their records to Userlist.
+
+
+```php
+// In Laravel, Userlist companies are often "teams"
+$team = App\Models\Team::find(1);
+app(Userlist\Laravel\Contracts\Push::class)->company($team);
+```
+
+These will transform the model to a "jsonable" associated array using the model's `toUserList()` method (if defined), else fall back to its default transformation logic for the class.
 
 ### Tracking Users
 
+You can track users (adding and updating) by "pushing" their records to Userlist.
+
+
+```php
+$user = App\Models\User::find(1);
+app(Userlist\Laravel\Contracts\Push::class)->user($user);
+```
+
+These will transform the model to a "jsonable" associated array using the model's `toUserList()` method (if defined), else fall back to its default transformation logic for the class.
 
 ### Tracking Events
+
 
 
 ## Contributing
