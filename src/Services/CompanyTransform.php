@@ -6,13 +6,22 @@ use Userlist\Laravel\Contracts\CompanyTransform as Transform;
 use Illuminate\Support\Str;
 
 class CompanyTransform implements Transform {
-    public function transform($company) {
-        $modelName = Str::slug((class_basename(get_class($company))));
+
+    /**
+     * @param $entity
+     * @return array
+     */
+    public function transform($entity) {
+        if (method_exists($entity, 'toUserlist')) {
+            return $entity->toUserlist();
+        }
+
+        $modelName = Str::slug((class_basename(get_class($entity))));
 
         return [
-            'identifier' => "$modelName-$company->id",
-            'name' => $company->name,
-            'signed_up_at' => $company->created_at,
+            'identifier' => "$modelName-$entity->id",
+            'name' => $entity->name,
+            'signed_up_at' => $entity->created_at,
         ];
     }
 }

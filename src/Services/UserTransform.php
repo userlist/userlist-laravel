@@ -6,15 +6,24 @@ use Userlist\Laravel\Contracts\UserTransform as Transform;
 use Illuminate\Support\Str;
 
 class UserTransform implements Transform {
-    public function transform($user) {
-        $modelName = Str::slug((class_basename(get_class($user))));
+
+    /**
+     * @param $entity
+     * @return array
+     */
+    public function transform($entity) {
+        if (method_exists($entity, 'toUserlist')) {
+            return $entity->toUserlist();
+        }
+
+        $modelName = Str::slug((class_basename(get_class($entity))));
 
         return [
-            'identifier' => "$modelName-$user->id",
-            'email' => $user->email,
-            'signed_up_at' => $user->created_at,
+            'identifier' => "$modelName-$entity->id",
+            'email' => $entity->email,
+            'signed_up_at' => $entity->created_at,
             'properties' => [
-                'name' => $user->name
+                'name' => $entity->name
             ]
         ];
     }

@@ -18,8 +18,8 @@ class ImportCompaniesCommand extends ImportBaseCommand
      */
     protected $description = 'Imports all existing companies into Userlist';
 
-    protected function import($company) {
-      $this->userlist->company($company);
+    protected function import($model) {
+      $this->userlist->company($model);
     }
 
     protected function modelClass() {

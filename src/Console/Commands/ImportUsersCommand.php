@@ -18,8 +18,8 @@ class ImportUsersCommand extends ImportBaseCommand
      */
     protected $description = 'Imports all existing users into Userlist';
 
-    protected function import($user) {
-      $this->userlist->user($user);
+    protected function import($model) {
+      $this->userlist->user($model);
     }
 
     protected function modelClass() {
